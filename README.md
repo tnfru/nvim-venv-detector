@@ -4,7 +4,7 @@ A lightweight Neovim plugin that automatically detects and configures the Python
 
 ## Why?
 
-As a Software and AI Engineer, you frequently switch between projects, each with its own Python virtual environment. Manually updating your Neovim configuration to point to the correct Python executable for tools like `basedpyright` or `ruff` is tedious and error-prone.
+As a Software Engineer, you frequently switch between projects, each with its own Python virtual environment. Manually updating your Neovim configuration to point to the correct Python executable for tools like `basedpyright` or `ruff` is tedious and error-prone.
 
 This plugin solves that problem. It runs automatically when you launch Neovim and detects the project's virtual environment, setting the Python path for you. No more manual configuration.
 
