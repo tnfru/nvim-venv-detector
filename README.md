@@ -34,9 +34,7 @@ Choose your favorite plugin manager and add the following line.
 -- lua/plugins/venv.lua
 return {
   "tnfru/nvim-venv-detector",
-  lazy = false, -- Load on startup to detect the environment early
-  -- You can also use events like "FileType python" or "BufRead *.py"
-  -- event = "FileType python",
+  lazy = false,
 }
 ```
 
