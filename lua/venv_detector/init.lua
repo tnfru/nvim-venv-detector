@@ -6,8 +6,6 @@ function M.find_venv_python()
   local venv_dir
 
   -- 1. Check for `uv` environment
-  -- `uv` often creates a `.venv` folder, so we check for its lockfile
-  -- to give it priority.
   local uv_lockfile = io.open(cwd .. "/uv.lock", "r")
   if uv_lockfile then
     uv_lockfile:close()
@@ -24,10 +22,8 @@ function M.find_venv_python()
   local poetry_config = io.open(cwd .. "/pyproject.toml", "r")
   if poetry_config then
     poetry_config:close()
-    -- Try to find Poetry's virtualenv location
     local poetry_venv_cmd = "poetry env info -p 2>/dev/null"
     local poetry_venv = vim.fn.system(poetry_venv_cmd):gsub("%s+$", "")
-
     if poetry_venv ~= "" and vim.fn.isdirectory(poetry_venv) == 1 then
       local python_path = poetry_venv .. "/bin/python"
       if vim.fn.executable(python_path) == 1 then
@@ -47,7 +43,6 @@ function M.find_venv_python()
       else
         python_path = venv_dir .. "/bin/python"
       end
-
       if vim.fn.executable(python_path) == 1 then
         return python_path
       end
@@ -59,7 +54,6 @@ function M.find_venv_python()
   if venv_wrapper then
     local project_name = vim.fn.fnamemodify(cwd, ":t")
     local wrapper_path = venv_wrapper .. "/" .. project_name
-
     if vim.fn.isdirectory(wrapper_path) == 1 then
       local python_path = wrapper_path .. "/bin/python"
       if vim.fn.executable(python_path) == 1 then
@@ -72,22 +66,8 @@ function M.find_venv_python()
   return nil
 end
 
--- The setup function that will be called from the user's config
 function M.setup()
   local python_path = M.find_venv_python()
-  if python_path then
-    vim.g.python3_host_prog = python_path
-    vim.notify(
-      "venv detected: " .. vim.fn.fnamemodify(python_path, ":~"),
-      vim.log.levels.INFO,
-      { title = "Venv Detector" }
-    )
-  end
-end
-
-function M.setup()
-  local python_path = M.find_venv_python()
-
   if python_path then
     vim.g.python3_host_prog = python_path
     vim.notify(
@@ -96,10 +76,7 @@ function M.setup()
       { title = "Venv Detector" }
     )
   else
-    -- Optional: Notify the user that the system Python is being used.
-    -- This can be a bit noisy, so it's commented out by default.
-    -- You can uncomment it if you prefer the explicit feedback.
-    --
+    -- This part is optional and commented out by default to reduce noise.
     -- vim.notify(
     --   "No local venv found. Using system Python.",
     --   vim.log.levels.DEBUG,
