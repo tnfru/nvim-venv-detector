@@ -85,4 +85,27 @@ function M.setup()
   end
 end
 
+function M.setup()
+  local python_path = M.find_venv_python()
+
+  if python_path then
+    vim.g.python3_host_prog = python_path
+    vim.notify(
+      "venv detected: " .. vim.fn.fnamemodify(python_path, ":~"),
+      vim.log.levels.INFO,
+      { title = "Venv Detector" }
+    )
+  else
+    -- Optional: Notify the user that the system Python is being used.
+    -- This can be a bit noisy, so it's commented out by default.
+    -- You can uncomment it if you prefer the explicit feedback.
+    --
+    -- vim.notify(
+    --   "No local venv found. Using system Python.",
+    --   vim.log.levels.DEBUG,
+    --   { title = "Venv Detector" }
+    -- )
+  end
+end
+
 return M
