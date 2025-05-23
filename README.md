@@ -83,6 +83,24 @@ lspconfig.ruff.setup {
 
 And that's it! The correct Python interpreter will now be used automatically for linting, formatting, and type-checking in all your projects.
 
+## Ensuring Pop-up Notifications (with nvim-notify)
+
+If you use a notification plugin like [rcarriga/nvim-notify](https://github.com/rcarriga/nvim-notify) and want to ensure this plugin's notifications appear correctly as pop-ups, it's recommended to ensure `nvim-notify` is loaded first.
+
+You can do this with `lazy.nvim` by specifying it as a dependency:
+
+```lua
+  {
+    "tnfru/nvim-venv-detector",
+    event = "VimEnter", -- Ensures it runs after Neovim is fully initialized
+    dependencies = {
+      "rcarriga/nvim-notify",
+    },
+    config = function()
+      require("venv_detector").setup()
+    end,
+  },
+}
 ## Contributing
 
 Feel free to open an issue or submit a pull request if you have suggestions for improvements or find any bugs.
@@ -90,3 +108,4 @@ Feel free to open an issue or submit a pull request if you have suggestions for 
 ## License
 
 MIT
+```
