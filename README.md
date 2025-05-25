@@ -106,7 +106,3 @@ You can do this with `lazy.nvim` by specifying it as a dependency:
 ## Contributing
 
 Feel free to open an issue or submit a pull request if you have suggestions for improvements or find any bugs.
-
-## License
-
-MIT
