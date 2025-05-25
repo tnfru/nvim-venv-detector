@@ -110,4 +110,3 @@ Feel free to open an issue or submit a pull request if you have suggestions for 
 ## License
 
 MIT
-```
