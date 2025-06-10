@@ -1,69 +1,67 @@
 # nvim-venv-detector
 
-A lightweight Neovim plugin that automatically detects and configures the Python virtual environment for your projects.
+### 🐍 Automatic Python Virtual Environment Detection for Neovim
 
-## Why?
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
+[![Neovim >= 0.9.0](https://img.shields.io/badge/Neovim-≥%200.9.0-blueviolet.svg)](https://github.com/neovim/neovim)
 
-As a Software Engineer, you frequently switch between projects, each with its own Python virtual environment. Manually updating your Neovim configuration to point to the correct Python executable for tools like `basedpyright` or `ruff` is tedious and error-prone.
+Stop manually configuring Python virtual environments in Neovim. `nvim-venv-detector` is a lightweight, zero-config plugin that automatically finds and activates the correct virtual environment for your projects.
 
-This plugin solves that problem. It runs automatically when you launch Neovim and detects the project's virtual environment, setting the Python path for you. No more manual configuration.
+---
 
-## Features
+## 💡 Philosophy
 
-- Zero-configuration needed after installation.
-- Detects environments from **uv**, **Poetry**, and standard **venv**.
-- Lightweight and fast, with no impact on startup time.
-- Sets `vim.g.python3_host_prog` for easy integration with other plugins and LSP clients.
+As a software engineer, you jump between multiple projects a day. Your editor should adapt to your project, not the other way around. Manually setting the Python path for your LSP, linter, and formatters is a tedious distraction that breaks your flow.
 
-## Detection Order
+This plugin is built on a simple "fire-and-forget" principle: install it, and it just works. It silently scans your project on startup, finds the right `python` executable, and configures Neovim for you.
 
-The plugin searches for a virtual environment in the current working directory in the following order:
+## ✨ Features
 
-1.  **uv**: Checks for a `uv.lock` file and a corresponding `.venv` directory.
-2.  **Poetry**: Detects the environment managed by Poetry via `poetry env info -p`.
-3.  **Standard Virtual Environments**: Looks for common `.venv` or `venv` directories.
-4.  **Virtualenvwrapper**: Checks for environments in the `$WORKON_HOME` directory.
+* 🚀 **Zero-Config & Automatic**: Runs on startup without needing any configuration.
+* 🐍 **Broad Support**: Detects virtual environments from **uv**, **Poetry**, **standard venv**, and **virtualenvwrapper**.
+* ⚡️ **Fast & Lightweight**: Written in pure Lua with a minimal codebase. It has no impact on your startup time.
+* 🛠️ **Simple Integration**: Exposes the detected Python path to `vim.g.python3_host_prog` for easy use with any LSP, linter, or formatter.
 
-## Installation
+## Demo
 
-Choose your favorite plugin manager and add the following line.
+*(**Recommendation:** Use a tool like [screen-to-gif](https://www.screentogif.com/) or `asciinema` to create a short GIF showing you opening a project and the notification appearing. It's the single best way to sell your plugin.)*
 
-### [lazy.nvim](https://github.com/folke/lazy.nvim)
+![Demo GIF Placeholder](https://user-images.githubusercontent.com/12345/67890.gif)
+*<p align="center">nvim-venv-detector automatically activates the project's Poetry environment.</p>*
+
+## 📦 Installation
+
+Install the plugin with your favorite package manager.
+
+### [lazy.nvim](https://github.com/folke/lazy.nvim) (Recommended)
+
+This is the recommended setup. Using `event = "VimEnter"` ensures the plugin loads just after startup, preventing any delay.
 
 ```lua
 -- lua/plugins/venv.lua
 return {
   "tnfru/nvim-venv-detector",
-  lazy = false,
+  event = "VimEnter",
+  config = function()
+    require("venv_detector").setup()
+  end,
 }
 ```
 
-### [packer.nvim](https://github.com/wbthomason/packer.nvim)
+## 🛠️ Usage with LSP & Tooling
 
-```lua
-use {
-  "tnfru/nvim-venv-detector",
-}
-```
+The plugin works by setting a single global variable: `vim.g.python3_host_prog`.
 
-### [vim-plug](https://github.com/junegunn/vim-plug)
+You can then reference this variable in your other plugin configurations to ensure they always use the project's isolated Python environment.
 
-```vim
-Plug 'tnfru/nvim-venv-detector'
-```
-
-The plugin's `setup` function is called automatically, so no extra configuration is required.
-
-## Usage with LSP
-
-Once installed, `nvim-venv-detector` sets the `vim.g.python3_host_prog` variable. You can use this variable in your LSP configurations to ensure they use the project's virtual environment.
-
-Here is an example for `nvim-lspconfig` and the `basedpyright` language server and `ruff` linter:
+Here is a typical example for `nvim-lspconfig` with `basedpyright` and `ruff_lsp`:
 
 ```lua
 -- lua/configs/lspconfig.lua
 local lspconfig = require("lspconfig")
 
+-- For basedpyright, pyright, etc.
 lspconfig.basedpyright.setup {
   settings = {
     python = {
@@ -72,37 +70,86 @@ lspconfig.basedpyright.setup {
   },
 }
 
-lspconfig.ruff.setup {
-  settings = {
-    python = {
-      pythonPath = vim.g.python3_host_prog,
+-- For ruff-lsp
+lspconfig.ruff_lsp.setup {
+  init_options = {
+    settings = {
+      -- Tell ruff-lsp to use the detected interpreter
+      interpreter = { vim.g.python3_host_prog },
     },
   },
 }
 ```
 
-And that's it! The correct Python interpreter will now be used automatically for linting, formatting, and type-checking in all your projects.
+That's it! Your entire Python toolchain will now use the correct interpreter for every project, every time.
 
-## Ensuring Pop-up Notifications (with nvim-notify)
+## ⚙️ Configuration
 
-If you use a notification plugin like [rcarriga/nvim-notify](https://github.com/rcarriga/nvim-notify) and want to ensure this plugin's notifications appear correctly as pop-ups, it's recommended to ensure `nvim-notify` is loaded first.
+The plugin is designed to be zero-config. However, you can pass options to the `setup()` function if needed.
 
-You can do this with `lazy.nvim` by specifying it as a dependency:
+For example, to ensure notifications from this plugin appear correctly with `nvim-notify`, you can declare it as a dependency. You could also disable the notifications entirely.
 
 ```lua
-  {
-    "tnfru/nvim-venv-detector",
-    event = "VimEnter", -- Ensures it runs after Neovim is fully initialized
-    dependencies = {
-      "rcarriga/nvim-notify",
-    },
-    config = function()
-      require("venv_detector").setup()
-    end,
+-- Using lazy.nvim
+{
+  "tnfru/nvim-venv-detector",
+  event = "VimEnter",
+  dependencies = {
+    -- Recommended to ensure notifications are properly displayed
+    "rcarriga/nvim-notify",
+  },
+  opts = {
+    -- You can add options here in the future. For example:
+    -- notifications = {
+    --   enabled = true,
+    -- },
   },
 }
 ```
+*(Note: You would need to update the `setup` function in `init.lua` to handle the `opts` table for this to work).*
 
-## Contributing
+## 🔬 Detection Logic
 
-Feel free to open an issue or submit a pull request if you have suggestions for improvements or find any bugs.
+The plugin searches for a virtual environment in the current project directory using the following order of priority:
+
+1.  **uv**: Checks for a `uv.lock` file and a corresponding `.venv` directory.
+2.  **Poetry**: Runs `poetry env info -p` to find the environment path managed by Poetry.
+3.  **Standard Virtual Environments**: Looks for common `.venv` or `venv` directories. It checks for both `bin/python` (Linux/macOS) and `Scripts/python.exe` (Windows).
+4.  **Virtualenvwrapper**: Checks for an environment in the `$WORKON_HOME` directory that matches the project's folder name.
+
+If a valid Python executable is found, it is set, and a notification is shown. If not, the plugin does nothing and falls back to your global Python configuration.
+
+<details>
+<summary>Other Plugin Managers</summary>
+
+### [packer.nvim](https://github.com/wbthomason/packer.nvim)
+
+```lua
+use {
+  "tnfru/nvim-venv-detector",
+  config = function()
+    require("venv_detector").setup()
+  end,
+}
+```
+
+### [vim-plug](https://github.com/junegunn/vim-plug)
+
+```vim
+Plug 'tnfru/nvim-venv-detector'
+
+" Call setup in your init.lua or via a lua heredoc
+lua << EOF
+require("venv_detector").setup()
+EOF
+```
+
+</details>
+
+## 🙏 Contributing
+
+This project is open to contributions! Feel free to open an issue or submit a pull request if you have suggestions for improvements, find a bug, or want to add support for another environment manager.
+
+## 📄 License
+
+This project is licensed under the **MIT License**. See the `LICENSE` file for details.
