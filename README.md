@@ -123,15 +123,8 @@ For example, to ensure notifications from this plugin appear correctly with `nvi
     -- Recommended to ensure notifications are properly displayed
     "rcarriga/nvim-notify",
   },
-  opts = {
-    -- You can add options here in the future. For example:
-    -- notifications = {
-    --   enabled = true,
-    -- },
-  },
 }
 ```
-*(Note: You would need to update the `setup` function in `init.lua` to handle the `opts` table for this to work).*
 
 ## 🔬 Detection Logic
 
