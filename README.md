@@ -8,14 +8,6 @@
 
 Stop manually configuring Python virtual environments in Neovim. `nvim-venv-detector` is a lightweight, zero-config plugin that automatically finds and activates the correct virtual environment for your projects.
 
----
-
-## 💡 Philosophy
-
-As a software engineer, you jump between multiple projects a day. Your editor should adapt to your project, not the other way around. Manually setting the Python path for your LSP, linter, and formatters is a tedious distraction that breaks your flow.
-
-This plugin is built on a simple "fire-and-forget" principle: install it, and it just works. It silently scans your project on startup, finds the right `python` executable, and configures Neovim for you.
-
 ## ✨ Features
 
 * 🚀 **Zero-Config & Automatic**: Runs on startup without needing any configuration.
@@ -25,10 +17,16 @@ This plugin is built on a simple "fire-and-forget" principle: install it, and it
 
 ## Demo
 
-
 https://github.com/user-attachments/assets/9eda0dda-cd3b-406d-aa99-b9d4febe3722
 
 *<p align="center">nvim-venv-detector automatically activates the project's UV environment.</p>*
+
+## 💡 Philosophy
+
+As a software engineer, you jump between multiple projects a day. Your editor should adapt to your project, not the other way around. Manually setting the Python path for your LSP, linter, and formatters is a tedious distraction that breaks your flow.
+
+This plugin is built on a simple "fire-and-forget" principle: install it, and it just works. It silently scans your project on startup, finds the right `python` executable, and configures Neovim for you.
+
 
 ## 📦 Installation
 
