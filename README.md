@@ -25,10 +25,14 @@ This plugin is built on a simple "fire-and-forget" principle: install it, and it
 
 ## Demo
 
-*(**Recommendation:** Use a tool like [screen-to-gif](https://www.screentogif.com/) or `asciinema` to create a short GIF showing you opening a project and the notification appearing. It's the single best way to sell your plugin.)*
+
+
+https://github.com/user-attachments/assets/4a7e99fa-ecb2-4cf5-87db-edf51b7b6a0b
+
+
 
 ![Demo GIF Placeholder](https://user-images.githubusercontent.com/12345/67890.gif)
-*<p align="center">nvim-venv-detector automatically activates the project's Poetry environment.</p>*
+*<p align="center">nvim-venv-detector automatically activates the project's UV environment.</p>*
 
 ## 📦 Installation
 
