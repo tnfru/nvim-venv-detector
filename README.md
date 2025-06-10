@@ -47,6 +47,33 @@ return {
 }
 ```
 
+<details>
+<summary>Other Plugin Managers</summary>
+
+### [packer.nvim](https://github.com/wbthomason/packer.nvim)
+
+```lua
+use {
+  "tnfru/nvim-venv-detector",
+  config = function()
+    require("venv_detector").setup()
+  end,
+}
+```
+
+### [vim-plug](https://github.com/junegunn/vim-plug)
+
+```vim
+Plug 'tnfru/nvim-venv-detector'
+
+" Call setup in your init.lua or via a lua heredoc
+lua << EOF
+require("venv_detector").setup()
+EOF
+```
+
+</details>
+
 ## 🛠️ Usage with LSP & Tooling
 
 The plugin works by setting a single global variable: `vim.g.python3_host_prog`.
@@ -117,32 +144,6 @@ The plugin searches for a virtual environment in the current project directory u
 
 If a valid Python executable is found, it is set, and a notification is shown. If not, the plugin does nothing and falls back to your global Python configuration.
 
-<details>
-<summary>Other Plugin Managers</summary>
-
-### [packer.nvim](https://github.com/wbthomason/packer.nvim)
-
-```lua
-use {
-  "tnfru/nvim-venv-detector",
-  config = function()
-    require("venv_detector").setup()
-  end,
-}
-```
-
-### [vim-plug](https://github.com/junegunn/vim-plug)
-
-```vim
-Plug 'tnfru/nvim-venv-detector'
-
-" Call setup in your init.lua or via a lua heredoc
-lua << EOF
-require("venv_detector").setup()
-EOF
-```
-
-</details>
 
 ## 🙏 Contributing
 
