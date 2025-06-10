@@ -27,11 +27,9 @@ This plugin is built on a simple "fire-and-forget" principle: install it, and it
 
 
 
-https://github.com/user-attachments/assets/4a7e99fa-ecb2-4cf5-87db-edf51b7b6a0b
+https://github.com/user-attachments/assets/da0d45a9-5c41-4040-9c60-d3133b893b29
 
 
-
-![Demo GIF Placeholder](https://user-images.githubusercontent.com/12345/67890.gif)
 *<p align="center">nvim-venv-detector automatically activates the project's UV environment.</p>*
 
 ## 📦 Installation
