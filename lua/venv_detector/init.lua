@@ -1,5 +1,7 @@
--- lua/venv_detector/init.lua (Final Clean Version)
 local M = {}
+
+-- A state variable to ensure the setup runs only once
+local did_run = false
 
 function M.find_venv_python()
   local cwd = vim.fn.getcwd()
@@ -20,7 +22,7 @@ function M.find_venv_python()
       python_path_to_check = venv_dir .. "/bin/python"
       local found_path = check_python_path(python_path_to_check)
       if found_path then
-        return found_path
+        return found_path, "uv"
       end
     end
   end
@@ -37,7 +39,7 @@ function M.find_venv_python()
       python_path_to_check = poetry_venv_path_str .. "/bin/python"
       local found_path = check_python_path(python_path_to_check)
       if found_path then
-        return found_path
+        return found_path, "Poetry"
       end
     end
   end
@@ -54,7 +56,7 @@ function M.find_venv_python()
       end
       local found_path = check_python_path(python_path_to_check)
       if found_path then
-        return found_path
+        return found_path, "venv"
       end
     end
   end
@@ -68,7 +70,7 @@ function M.find_venv_python()
       python_path_to_check = wrapper_path_dir .. "/bin/python"
       local found_path = check_python_path(python_path_to_check)
       if found_path then
-        return found_path
+        return found_path, "virtualenvwrapper"
       end
     end
   end
@@ -77,23 +79,24 @@ function M.find_venv_python()
 end
 
 function M.setup()
-  local python_path = M.find_venv_python()
+  -- Add a guard clause to prevent running more than once
+  if did_run then
+    return
+  end
+
+  local python_path, venv_type = M.find_venv_python()
+
   if python_path then
     vim.g.python3_host_prog = python_path
     vim.notify(
-      "venv detected: " .. vim.fn.fnamemodify(python_path, ":~"),
+      "Activated " .. venv_type .. " venv: " .. vim.fn.fnamemodify(python_path, ":~"),
       vim.log.levels.INFO,
       { title = "Venv Detector" }
     )
-  else
-    -- Optional: You can uncomment this if you want a notification when no venv is found.
-    -- vim.notify(
-    --   "No local venv found. Using system Python.",
-    --   vim.log.levels.DEBUG, -- Use DEBUG to make it less intrusive
-    --   { title = "Venv Detector" }
-    -- )
   end
+
+  -- Mark that the setup has run
+  did_run = true
 end
 
 return M
-
