@@ -10,23 +10,22 @@ Stop manually configuring Python virtual environments in Neovim. `nvim-venv-dete
 
 ## ✨ Features
 
-* 🚀 **Zero-Config & Automatic**: Runs on startup without needing any configuration.
-* 🐍 **Broad Support**: Detects virtual environments from **uv**, **Poetry**, **standard venv**, and **virtualenvwrapper**.
-* ⚡️ **Fast & Lightweight**: Written in pure Lua with a minimal codebase. It has no impact on your startup time.
-* 🛠️ **Simple Integration**: Exposes the detected Python path to `vim.g.python3_host_prog` for easy use with any LSP, linter, or formatter.
+- 🚀 **Zero-Config & Automatic**: Runs on startup without needing any configuration.
+- 🐍 **Broad Support**: Detects virtual environments from **uv**, **Poetry**, **standard venv**, and **virtualenvwrapper**.
+- ⚡️ **Fast & Lightweight**: Written in pure Lua with a minimal codebase. It has no impact on your startup time.
+- 🛠️ **Simple Integration**: Exposes the detected Python path to a dedicated global variable (`vim.g.venv_detector_python_path`) for robust, conflict-free use with any LSP, linter, or formatter.
 
 ## Demo
 
-https://github.com/user-attachments/assets/9eda0dda-cd3b-406d-aa99-b9d4febe3722
+[https://github.com/user-attachments/assets/9eda0dda-cd3b-406d-aa99-b9d4febe3722](https://github.com/user-attachments/assets/9eda0dda-cd3b-406d-aa99-b9d4febe3722)
 
-*<p align="center">nvim-venv-detector automatically activates the project's UV environment.</p>*
+_<p align="center">nvim-venv-detector automatically activates the project's UV environment.</p>_
 
 ## 💡 Philosophy
 
 As a software engineer, you jump between multiple projects a day. Your editor should adapt to your project, not the other way around. Manually setting the Python path for your LSP, linter, and formatters is a tedious distraction that breaks your flow.
 
 This plugin is built on a simple "fire-and-forget" principle: install it, and it just works. It silently scans your project on startup, finds the right `python` executable, and configures Neovim for you.
-
 
 ## 📦 Installation
 
@@ -76,9 +75,9 @@ EOF
 
 ## 🛠️ Usage with LSP & Tooling
 
-The plugin works by setting a single global variable: `vim.g.python3_host_prog`.
+The plugin works by setting a dedicated global variable: `vim.g.venv_detector_python_path`.
 
-You can then reference this variable in your other plugin configurations to ensure they always use the project's isolated Python environment.
+You can then reference this variable in your other plugin configurations to ensure they always use the project's isolated Python environment. This approach avoids conflicts with Neovim's built-in Python provider.
 
 Here is a typical example for `nvim-lspconfig` with `basedpyright` and `ruff_lsp`:
 
@@ -90,7 +89,7 @@ local lspconfig = require("lspconfig")
 lspconfig.basedpyright.setup {
   settings = {
     python = {
-      pythonPath = vim.g.python3_host_prog,
+      pythonPath = vim.g.venv_detector_python_path,
     },
   },
 }
@@ -100,31 +99,13 @@ lspconfig.ruff_lsp.setup {
   init_options = {
     settings = {
       -- Tell ruff-lsp to use the detected interpreter
-      interpreter = { vim.g.python3_host_prog },
+      interpreter = { vim.g.venv_detector_python_path },
     },
   },
 }
 ```
 
 That's it! Your entire Python toolchain will now use the correct interpreter for every project, every time.
-
-## ⚙️ Configuration
-
-The plugin is designed to be zero-config. However, you can pass options to the `setup()` function if needed.
-
-For example, to ensure notifications from this plugin appear correctly with `nvim-notify`, you can declare it as a dependency. You could also disable the notifications entirely.
-
-```lua
--- Using lazy.nvim
-{
-  "tnfru/nvim-venv-detector",
-  event = "VimEnter",
-  dependencies = {
-    -- Recommended to ensure notifications are properly displayed
-    "rcarriga/nvim-notify",
-  },
-}
-```
 
 ## 🔬 Detection Logic
 
@@ -136,7 +117,6 @@ The plugin searches for a virtual environment in the current project directory u
 4.  **Virtualenvwrapper**: Checks for an environment in the `$WORKON_HOME` directory that matches the project's folder name.
 
 If a valid Python executable is found, it is set, and a notification is shown. If not, the plugin does nothing and falls back to your global Python configuration.
-
 
 ## 🙏 Contributing
 
