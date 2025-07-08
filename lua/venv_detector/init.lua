@@ -79,7 +79,6 @@ function M.find_venv_python()
 end
 
 function M.setup()
-  -- Add a guard clause to prevent running more than once
   if did_run then
     return
   end
@@ -87,7 +86,9 @@ function M.setup()
   local python_path, venv_type = M.find_venv_python()
 
   if python_path then
-    vim.g.python3_host_prog = python_path
+    -- Set the dedicated global variable
+    vim.g.venv_detector_python_path = python_path
+
     vim.notify(
       "Activated " .. venv_type .. " venv: " .. vim.fn.fnamemodify(python_path, ":~"),
       vim.log.levels.INFO,
@@ -95,7 +96,6 @@ function M.setup()
     )
   end
 
-  -- Mark that the setup has run
   did_run = true
 end
 
