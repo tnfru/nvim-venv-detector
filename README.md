@@ -13,7 +13,10 @@ Stop manually configuring Python virtual environments in Neovim. `nvim-venv-dete
 - 🚀 **Zero-Config & Automatic**: Runs on startup without needing any configuration.
 - 🐍 **Broad Support**: Detects virtual environments from **uv**, **Poetry**, **standard venv**, and **virtualenvwrapper**.
 - ⚡️ **Fast & Lightweight**: Written in pure Lua with a minimal codebase. It has no impact on your startup time.
-- 🛠️ **Simple Integration**: Exposes the detected Python path to a dedicated global variable (`vim.g.venv_detector_python_path`) for robust, conflict-free use with any LSP, linter, or formatter.
+- 🔄 **Full Environment Activation**: Automatically sets `VIRTUAL_ENV` and `PATH` environment variables, just like `source .venv/bin/activate`.
+- 🛠️ **Smart LSP Integration**: Automatically restarts Python LSP clients to pick up the new environment.
+- ⚙️ **Configurable**: Fine-tune behavior with optional configuration settings.
+- 🛠️ **Backward Compatible**: Still exposes the detected Python path to `vim.g.venv_detector_python_path` for manual LSP configuration.
 
 ## Demo
 
@@ -73,13 +76,40 @@ EOF
 
 </details>
 
+## ⚙️ Configuration
+
+The plugin works out of the box with zero configuration, but you can customize its behavior:
+
+```lua
+require("venv_detector").setup({
+  auto_activate_venv = true,     -- Set VIRTUAL_ENV and PATH automatically (default: true)
+  auto_restart_lsp = true,       -- Restart Python LSP clients automatically (default: true)
+  lsp_client_names = {           -- LSP client names to restart (default list includes common Python LSPs)
+    "pyright",
+    "pylsp", 
+    "ruff",
+    "ruff_lsp",
+    "basedpyright",
+    "python"
+  },
+  notify = true                  -- Show notifications (default: true)
+})
+```
+
 ## 🛠️ Usage with LSP & Tooling
 
-The plugin works by setting a dedicated global variable: `vim.g.venv_detector_python_path`.
+### Automatic Mode (Recommended)
 
-You can then reference this variable in your other plugin configurations to ensure they always use the project's isolated Python environment. This approach avoids conflicts with Neovim's built-in Python provider.
+By default, the plugin automatically:
+1. **Activates the virtual environment** by setting `VIRTUAL_ENV` and `PATH` environment variables
+2. **Restarts Python LSP clients** to pick up the new environment
+3. **Resolves "unknown module" errors** for packages like `torch`, `numpy`, etc.
 
-Here is a typical example for `nvim-lspconfig` with `basedpyright` and `ruff_lsp`:
+No additional configuration needed! Your LSP will automatically detect packages installed in the virtual environment.
+
+### Manual LSP Configuration (Legacy)
+
+If you prefer manual control or need to integrate with custom LSP setups, the plugin still sets `vim.g.venv_detector_python_path`:
 
 ```lua
 -- lua/configs/lspconfig.lua
@@ -94,18 +124,25 @@ lspconfig.basedpyright.setup {
   },
 }
 
--- For ruff-lsp
-lspconfig.ruff_lsp.setup {
+-- For ruff
+lspconfig.ruff.setup {
+  cmd = { vim.g.venv_detector_python_path, "-m", "ruff", "server", "--preview" },
   init_options = {
     settings = {
-      -- Tell ruff-lsp to use the detected interpreter
       interpreter = { vim.g.venv_detector_python_path },
     },
   },
 }
 ```
 
-That's it! Your entire Python toolchain will now use the correct interpreter for every project, every time.
+To use manual mode only, disable automatic activation:
+
+```lua
+require("venv_detector").setup({
+  auto_activate_venv = false,  -- Only detect, don't activate
+  auto_restart_lsp = false     -- Don't restart LSP clients
+})
+```
 
 ## 🔬 Detection Logic
 
